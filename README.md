@@ -17,7 +17,9 @@ It is the perfect place to build powerful decentralised applications (dApps) wit
 ### **Cudos** (The blockchain and compute platform):
 
 - **The Go-To:** [Cudos Docs](https://docs.cudos.org/docs/build/intro)
-- `cudos-blast` [Deployment and Interaction Tool](https://www.npmjs.com/package/cudos-blast)
+- `cudos-blast` [Contract Deployment and Interaction Tool](https://www.npmjs.com/package/cudos-blast)
+- [Cudos Sample Contracts and Code](https://github.com/cudos-examples)
+- [Cudos Node Repo](https://github.com/CudoVentures/cudos-node)
 
 ### **Rust** (The language used for Cudos smart contracts):
 
