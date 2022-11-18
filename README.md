@@ -9,7 +9,7 @@ It is the perfect place to build powerful decentralised applications (dApps) wit
 ### Your flow for building dApps with Cudos:
 1. Write a smart contract in Rust, compiled to CosmWasm.
 2. Deploy your smart contract to the blockchain and initialise it.
-3. Build a frontend application to interact with the blockchain from a neat UI. These interactions are made using CosmJS to the blockchain, which you can think of simply as a database underlying a traditional application.
+3. Build a frontend application to interact with the blockchain and your contract on it from a neat UI. These interactions are made using CosmJS to the blockchain, which you can think of simply as a database underlying a traditional application.
 4. Deploy your frontend application onto the CudoCompute network in order to host your dApp.
 
 ## Great resources for each of:
