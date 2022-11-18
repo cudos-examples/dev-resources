@@ -67,7 +67,7 @@ sudo apt-get install -y nodejs
 ```console
 sudo apt-get install -y git
 ```
-4. Use `npm` to install `yarn` and `create-cosmos-app`:
+4. Use `npm` to install `yarn` and `create-cosmos-app` ([npm package here](https://github.com/cosmology-tech/create-cosmos-app)):
 ```console
 npm install --global yarn
 ```
@@ -78,9 +78,17 @@ npm install -g create-cosmos-app
 ```console
 create-cosmos-app
 ```
-6. Name your app:
+6. Name your app and set multi-chain:
 
-> \> name: my-app
+> `? [name] Enter your new app name: my-app`
+
+`Cloning into 'my-app'...`
+> `? [template] which template (Use arrow keys)`
+
+> `> connect-multi-chain`
+
+*(you may need to now wait a while)*
+
 7. Change directory into your application folder and run `yarn`:
 ```console
 cd my-app
@@ -89,4 +97,4 @@ cd my-app
 yarn && yarn dev
 ```
 8. Open the IP of your server in a web browser on port 3000, eg (http://34.246.34.92:3000)
-9. (Share any feedback you might have [here](https://cudoventures.typeform.com/to/FZYRvI2l))
+9. *(Share any feedback you might have about CudoCompute [here](https://cudoventures.typeform.com/to/FZYRvI2l))*
