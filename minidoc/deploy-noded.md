@@ -11,6 +11,8 @@
     You will need to have compiled your smart contract to the `.wasm` artifacts. This can be done locally for **testing** purposes only.
     >For **production**, you will need to compile your contract within the [`rust-optimizer`](https://github.com/CosmWasm/rust-optimizer) Docker container for reproducible and verifiable builds. This should only be done using Intel x86 processors. ARM processors cannot generate reproducible builds.
 
+    Need some source file examples? You can start out by compiling all the CW contract files. These are the standard contracts for tokens in the Cosmos ecosystem and you can find them at [the `cw-plus` repo](https://github.com/CosmWasm/cw-plus)
+
 3. **Set environment variables**
     
     You will notice we use *a lot* of environment variables for all the flags of the CLI to keep things structured and avoid repetition. We use `_TN` at the end of any flags to denote "testnet". Here is an example list of flags:
@@ -67,7 +69,7 @@
 
      To do this we use the `cudos-noded` CLI to run the `tx wasm store` command which uploads the contract file to the chain. We set the output of that command to the `$RESULT` environment variable:
     ```console
-    STORE_RESULT=$(cudos-noded tx wasm store artifacts/<name-of-wasm-file.wasm> --from <your-wallet-name> $TESTNET_TX_FLAGS)
+    STORE_RESULT=$(cudos-noded tx wasm store artifacts/<name-of-wasm-file.wasm> --from <your-wallet-name> $TX_FLAGS_TN)
     ```
 
 6. **Get the index of the contract file from the chain.**
