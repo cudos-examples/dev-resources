@@ -11,7 +11,7 @@
     You will need to have compiled your smart contract to the `.wasm` artifacts. This can be done locally for **testing** purposes only.
     >For **production**, you will need to compile your contract within the [`rust-optimizer`](https://github.com/CosmWasm/rust-optimizer) Docker container for reproducible and verifiable builds. This should only be done using Intel x86 processors. ARM processors cannot generate reproducible builds.
 
-    Need some source file examples? You can start out by compiling all the CW contract files. These are the standard contracts for tokens in the Cosmos ecosystem and you can find them at [the `cw-plus` repo](https://github.com/CosmWasm/cw-plus)
+    Need some source file examples? You can start out by compiling all the CW contract files. These are the standard contracts for tokens in the Cosmos ecosystem and you can find them at [the `cw-plus` repo](https://github.com/CosmWasm/cw-plus). Since `cw-plus` is a monorepo, use the `workspace-optimizer` within the `rust-optimzer` mentioned above.
 
 3. **Set environment variables**
     
