@@ -55,7 +55,7 @@
 
     We now add this wallet to an environment variable as well, we call it `$OWNER_TN` for testnet:
     ```console
-    OWNER_TN=$( cudos-noded keys show -a owner --keyring-backend "$KEYRING_TN" | tee /dev/tty | tail -1 | tr -d '\r' )
+    OWNER_TN=$( cudos-noded keys show -a <your-wallet-name> --keyring-backend "$KEYRING_TN" | tee /dev/tty | tail -1 | tr -d '\r' )
     ```
 
     >:warning: As always, keep your mnemonic phrase safe and secret.
