@@ -69,7 +69,7 @@
 
      To do this we use the `cudos-noded` CLI to run the `tx wasm store` command which uploads the contract file to the chain. We set the output of that command to the `$RESULT` environment variable:
     ```console
-    STORE_RESULT=$(cudos-noded tx wasm store artifacts/<name-of-wasm-file.wasm> --from <your-wallet-name> `echo $TX_FLAGS_TN`)
+    STORE_RESULT=$(cudos-noded tx wasm store artifacts/<name-of-wasm-file.wasm> --from $OWNER_TN `echo $TX_FLAGS_TN`)
     ```
 
 6. **Get the index of the contract file from the chain.**
@@ -94,7 +94,7 @@
     ```
     This calls the `instantiate` method on the stored contract and passes in the JSON above.
     ```console
-    cudos-noded tx wasm instantiate $CONTRACT_INDEX "$INST" --from $OWNER_TN --label "<label-name-for-contract" $TX_FLAGS_TN
+    cudos-noded tx wasm instantiate $CONTRACT_INDEX "$INST" --from $OWNER_TN --label "<label-name-for-contract" `echo $TX_FLAGS_TN`
     ```
 
 8. **Get the contract address.**
@@ -123,7 +123,7 @@
     ```
     Then we execute this on chain:
     ```console
-    cudos-noded tx wasm execute $CONTRACT_ADDRESS "$TRANSFER_TO_OLLIE" --from $OWNER_TN $TX_FLAGS_TN
+    cudos-noded tx wasm execute $CONTRACT_ADDRESS "$TRANSFER_TO_OLLIE" --from $OWNER_TN `echo $TX_FLAGS_TN`
     ```
 
 10. **BONUS 2: Query the contract state from the CLI**
