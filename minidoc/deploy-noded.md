@@ -86,11 +86,11 @@
 
     Some contracts don't need a payload if the `InstantiateMsg` struct is empty:
     ```console
-    INST = "{}"
+    INST="{}"
     ```
     Here is an example of a payload for a standard CW20 token instantiation, we use `jq` again to format the JSON payload, note the use of the `--arg` to pass an `$address` argument based on your `$OWNER_TN` environment variable you set earlier:
     ```console
-    INST = $( jq -n --arg address $OWNER_TN '{ "name": "icecream", "symbol": "icream", "decimals": 6, "initial_balances": [ { "address": $address, "amount": "1000000" } ], "mint": { "minter": $address, "cap": "99900000000" } }' | tee /dev/tty )
+    INST=$( jq -n --arg address $OWNER_TN '{ "name": "icecream", "symbol": "icream", "decimals": 6, "initial_balances": [ { "address": $address, "amount": "1000000" } ], "mint": { "minter": $address, "cap": "99900000000" } }' | tee /dev/tty )
     ```
     This calls the `instantiate` method on the stored contract and passes in the JSON above.
     ```console
