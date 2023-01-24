@@ -94,7 +94,7 @@
     ```
     This calls the `instantiate` method on the stored contract and passes in the JSON above.
     ```console
-    cudos-noded tx wasm instantiate $CONTRACT_INDEX "$INST" --from $OWNER_TN --label "<label-name-for-contract" `echo $TX_FLAGS_TN`
+    cudos-noded tx wasm instantiate $CONTRACT_INDEX "$INST" --from $OWNER_TN --label "<label-name-for-contract>" `echo $TX_FLAGS_TN`
     ```
 
 8. **Get the contract address.**
