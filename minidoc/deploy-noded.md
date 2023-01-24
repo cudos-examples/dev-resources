@@ -19,24 +19,24 @@
     ```
     # environment variables for testnet, ending with "TN"
     export RPC_NODE_TN="https://sentry1.gcp-uscentral1.cudos.org:36657"
-    export CHAIN_ID_TN="cudos-testnet-public-3"
-    export GAS_TN="auto"
-    export GAS_PRICES_TN="5000000000000acudos"
-    export GAS_ADJUSTMENT_TN="1.3"
-    export KEYRING_TN="os"
+    export CHAIN_ID_TN=cudos-testnet-public-3
+    export GAS_TN=auto
+    export GAS_PRICES_TN=5000000000000acudos
+    export GAS_ADJUSTMENT_TN=1.3
+    export KEYRING_TN=os
 
     # environment variables for mainnet
     export RPC_NODE="https://rpc.cudos.org"
-    export CHAIN_ID="cudos-1"
-    export GAS="auto"
-    export GAS_PRICES="5000000000000acudos"
-    export GAS_ADJUSTMENT="1.3"
-    export KEYRING="os"
+    export CHAIN_ID=cudos-1
+    export GAS=auto
+    export GAS_PRICES=5000000000000acudos
+    export GAS_ADJUSTMENT=1.3
+    export KEYRING=os
 
     # the TX_FLAGS variables combines a number of the above testnet variables
-    export TX_FLAGS_TN="--node $RPC_NODE_TN --chain-id $CHAIN_ID_TN --gas $GAS_TN --gas-adjustment $GAS_ADJUSTMENT_TN --keyring-backend $KEYRING_TN"
+    export TX_FLAGS_TN="--node=$RPC_NODE_TN --gas=$GAS_TN --gas-adjustment=$GAS_ADJUSTMENT_TN --gas-prices=$GAS_PRICES_TN --chain-id=$CHAIN_ID_TN --keyring-backend=$KEYRING_TN"
 
-    export TX_FLAGS="--node $RPC_NODE --chain-id $CHAIN_ID --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --keyring-backend $KEYRING"
+    export TX_FLAGS="--node=$RPC_NODE --gas=$GAS --gas-adjustment=$GAS_ADJUSTMENT --gas-prices=$GAS_PRICES --chain-id=$CHAIN_ID --keyring-backend=$KEYRING"
     ```
     >It can be helpful to store this in a `vars.sh` file and then to run:
     ```console
@@ -69,7 +69,7 @@
 
      To do this we use the `cudos-noded` CLI to run the `tx wasm store` command which uploads the contract file to the chain. We set the output of that command to the `$RESULT` environment variable:
     ```console
-    STORE_RESULT=$(cudos-noded tx wasm store artifacts/<name-of-wasm-file.wasm> --from <your-wallet-name> $TX_FLAGS_TN)
+    STORE_RESULT=$(cudos-noded tx wasm store artifacts/<name-of-wasm-file.wasm> --from <your-wallet-name> `echo $TX_FLAGS_TN`)
     ```
 
 6. **Get the index of the contract file from the chain.**
@@ -94,7 +94,7 @@
     ```
     This calls the `instantiate` method on the stored contract and passes in the JSON above.
     ```console
-    cudos-noded tx wasm instantiate $CONTRACT_INDEX "$INST" --from <your-wallet-name> --label "<label-name-for-contract" $TX_FLAGS_TN
+    cudos-noded tx wasm instantiate $CONTRACT_INDEX "$INST" --from $OWNER_TN --label "<label-name-for-contract" $TX_FLAGS_TN
     ```
 
 8. **Get the contract address.**
@@ -123,7 +123,7 @@
     ```
     Then we execute this on chain:
     ```console
-    cudos-noded tx wasm execute $CONTRACT_ADDRESS "$TRANSFER_TO_OLLIE" --from <your-wallet-name> $TX_FLAGS_TN
+    cudos-noded tx wasm execute $CONTRACT_ADDRESS "$TRANSFER_TO_OLLIE" --from $OWNER_TN $TX_FLAGS_TN
     ```
 
 10. **BONUS 2: Query the contract state from the CLI**
