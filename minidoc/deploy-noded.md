@@ -69,13 +69,13 @@
 
      To do this we use the `cudos-noded` CLI to run the `tx wasm store` command which uploads the contract file to the chain. We set the output of that command to the `$RESULT` environment variable:
     ```console
-    STORE_RESULT=$(cudos-noded tx wasm store artifacts/<name-of-wasm-file.wasm> --from $OWNER_TN `echo $TX_FLAGS_TN`)
+    STORE_RESULT=$(cudos-noded tx wasm store ./<path-to>/artifacts/<name-of-wasm-file.wasm> --from $OWNER_TN `echo $TX_FLAGS_TN`)
     ```
 
 6. **Get the index of the contract file from the chain.**
-    >Cosmos blockchain store wasm contracts in an array, we need to find the index of your contract file in the array which is returned as part of the `$RESULT` of the previous command.
+    >Cosmos blockchain store wasm contracts in an array, we need to find the index of your contract file in the array which is returned as part of the `$STORE_RESULT` of the previous command.
     
-    While you can sift through the output of the previous command, it's easier to get the index of your smart contract on the chain, again using JQuery.
+    While you can sift through the output of the previous command, it's easier to get the index of your smart contract on the chain, here we use JQuery (`jq`) to extract it from the JSON:
     ```console
     CONTRACT_INDEX=$( echo $STORE_RESULT | jq -r '.logs[0].events[-1].attributes[-1].value' | tee /dev/tty )
     ```
@@ -92,16 +92,30 @@
     ```console
     INST=$( jq -n --arg address $OWNER_TN '{ "name": "icecream", "symbol": "icream", "decimals": 6, "initial_balances": [ { "address": $address, "amount": "1000000" } ], "mint": { "minter": $address, "cap": "99900000000" } }' | tee /dev/tty )
     ```
-    This calls the `instantiate` method on the stored contract and passes in the JSON above.
+
+    Before we instantiate our contract let's set two more variables, first we need a label name for the contract to give a human readable label:
     ```console
-    cudos-noded tx wasm instantiate $CONTRACT_INDEX "$INST" --from $OWNER_TN --label "<label-name-for-contract>" `echo $TX_FLAGS_TN`
+    $CONTRACT_LABEL="<label-name-for-contract>"
+    ```
+    Now we set an admin variable. For upgradeable smart contracts, we need to specify the address of the admin of the contract. While you can set the admin address to any address you like, in this case we use the owner address we used to store the contract:
+    ```console
+    ADMIN="--admin $OWNER_TN"
+    ```
+    Or, you can set this as `no-admin` if you want the contract to remain immutable:
+    ```console
+    ADMIN="--no-admin"
+    ```
+
+    :rocket: Now we instantiate! This calls the `instantiate` method on the stored contract and passes in the JSON from the `$INST` variable we set above. This gets stored in it's own `$INST_RESPONSE` variable:
+    ```console
+    INST_RESPONSE=$(cudos-noded tx wasm instantiate $CONTRACT_INDEX "$INST" --from $OWNER_TN --label $CONTRACT_LABEL `echo $TX_FLAGS_TN` $ADMIN)
     ```
 
 8. **Get the contract address.**
     
-    Now that our contract is instantiated, it has its own address on the network, so we grab that with a `wasm` query, extract it with `jq`, and set it as yet another environment variable:
+    Now that our contract is instantiated, it has its own address on the network which was returned in the output of the instantiation, so we extract it with `jq`, and set it as yet another environment variable:
     ```console
-    CONTRACT_ADDRESS=$(cudos-noded query wasm list-contract-by-code $CONTRACT_INDEX --node $RPC_NODE_TN --output json | jq -r '.contracts[-1]' | tee /dev/tty | tail -1 | tr -d '\r')
+    CONTRACT_ADDRESS=$(echo $INST_RESPONSE | jq -r '.logs[0].events[0].attributes[0].value' | tee /dev/tty | tail -1 | tr -d '\r')
     ```
     **You have successfully deployed and instantiated a smart contract on Cudos! Congratulations!**
     >Having deployed and retrieved the contract address, you can now interact with the contract on the chain, you can do this with a frontend to build your project into a full decentralised application (dApp). Take a look at `create-cosmos-app` to get going, it's a simple way of scaffolding a React frontend within the Cosmos ecosystem - Cudos included. [This YouTube video](https://www.youtube.com/live/hPec5D_lI1A?feature=share&t=1880) helps use `create-cosmos-app` for Cudos, as well as the docs in [the README of this very repo](../README.md).
