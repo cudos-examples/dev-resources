@@ -11,30 +11,32 @@
     You will need to have compiled your smart contract to the `.wasm` artifacts. This can be done locally for **testing** purposes only.
     >For **production**, you will need to compile your contract within the [`rust-optimizer`](https://github.com/CosmWasm/rust-optimizer) Docker container for reproducible and verifiable builds. This should only be done using Intel x86 processors. ARM processors cannot generate reproducible builds.
 
+    Need some source file examples? You can start out by compiling all the CW contract files. These are the standard contracts for tokens in the Cosmos ecosystem and you can find them at [the `cw-plus` repo](https://github.com/CosmWasm/cw-plus). Since `cw-plus` is a monorepo, use the `workspace-optimizer` within the `rust-optimzer` mentioned above.
+
 3. **Set environment variables**
     
     You will notice we use *a lot* of environment variables for all the flags of the CLI to keep things structured and avoid repetition. We use `_TN` at the end of any flags to denote "testnet". Here is an example list of flags:
     ```
     # environment variables for testnet, ending with "TN"
     export RPC_NODE_TN="https://sentry1.gcp-uscentral1.cudos.org:36657"
-    export CHAIN_ID_TN="cudos-testnet-public-3"
-    export GAS_TN="auto"
-    export GAS_PRICES_TN="5000000000000acudos"
-    export GAS_ADJUSTMENT_TN="1.3"
-    export KEYRING_TN="os"
+    export CHAIN_ID_TN=cudos-testnet-public-3
+    export GAS_TN=auto
+    export GAS_PRICES_TN=5000000000000acudos
+    export GAS_ADJUSTMENT_TN=1.3
+    export KEYRING_TN=os
 
     # environment variables for mainnet
     export RPC_NODE="https://rpc.cudos.org"
-    export CHAIN_ID="cudos-1"
-    export GAS="auto"
-    export GAS_PRICES="5000000000000acudos"
-    export GAS_ADJUSTMENT="1.3"
-    export KEYRING="os"
+    export CHAIN_ID=cudos-1
+    export GAS=auto
+    export GAS_PRICES=5000000000000acudos
+    export GAS_ADJUSTMENT=1.3
+    export KEYRING=os
 
     # the TX_FLAGS variables combines a number of the above testnet variables
-    export TX_FLAGS_TN="--node $RPC_NODE_TN --chain-id $CHAIN_ID_TN --gas $GAS_TN --gas-adjustment $GAS_ADJUSTMENT_TN --keyring-backend $KEYRING_TN"
+    export TX_FLAGS_TN="--node=$RPC_NODE_TN --gas=$GAS_TN --gas-adjustment=$GAS_ADJUSTMENT_TN --gas-prices=$GAS_PRICES_TN --chain-id=$CHAIN_ID_TN --keyring-backend=$KEYRING_TN"
 
-    export TX_FLAGS="--node $RPC_NODE --chain-id $CHAIN_ID --gas $GAS --gas-adjustment $GAS_ADJUSTMENT --keyring-backend $KEYRING"
+    export TX_FLAGS="--node=$RPC_NODE --gas=$GAS --gas-adjustment=$GAS_ADJUSTMENT --gas-prices=$GAS_PRICES --chain-id=$CHAIN_ID --keyring-backend=$KEYRING"
     ```
     >It can be helpful to store this in a `vars.sh` file and then to run:
     ```console
@@ -55,7 +57,7 @@
 
     We now add this wallet to an environment variable as well, we call it `$OWNER_TN` for testnet:
     ```console
-    OWNER_TN=$( cudos-noded keys show -a owner --keyring-backend "$KEYRING_TN" | tee /dev/tty | tail -1 | tr -d '\r' )
+    OWNER_TN=$( cudos-noded keys show -a <your-wallet-name> --keyring-backend "$KEYRING_TN" | tee /dev/tty | tail -1 | tr -d '\r' )
     ```
 
     >:warning: As always, keep your mnemonic phrase safe and secret.
@@ -67,13 +69,13 @@
 
      To do this we use the `cudos-noded` CLI to run the `tx wasm store` command which uploads the contract file to the chain. We set the output of that command to the `$RESULT` environment variable:
     ```console
-    STORE_RESULT=$(cudos-noded tx wasm store artifacts/<name-of-wasm-file.wasm> --from <your-wallet-name> $TESTNET_TX_FLAGS)
+    STORE_RESULT=$(cudos-noded tx wasm store ./<path-to>/artifacts/<name-of-wasm-file.wasm> --from $OWNER_TN `echo $TX_FLAGS_TN`)
     ```
 
 6. **Get the index of the contract file from the chain.**
-    >Cosmos blockchain store wasm contracts in an array, we need to find the index of your contract file in the array which is returned as part of the `$RESULT` of the previous command.
+    >Cosmos blockchain store wasm contracts in an array, we need to find the index of your contract file in the array which is returned as part of the `$STORE_RESULT` of the previous command.
     
-    While you can sift through the output of the previous command, it's easier to get the index of your smart contract on the chain, again using JQuery.
+    While you can sift through the output of the previous command, it's easier to get the index of your smart contract on the chain, here we use JQuery (`jq`) to extract it from the JSON:
     ```console
     CONTRACT_INDEX=$( echo $STORE_RESULT | jq -r '.logs[0].events[-1].attributes[-1].value' | tee /dev/tty )
     ```
@@ -84,22 +86,36 @@
 
     Some contracts don't need a payload if the `InstantiateMsg` struct is empty:
     ```console
-    INST = "{}"
+    INST="{}"
     ```
     Here is an example of a payload for a standard CW20 token instantiation, we use `jq` again to format the JSON payload, note the use of the `--arg` to pass an `$address` argument based on your `$OWNER_TN` environment variable you set earlier:
     ```console
-    INST = $( jq -n --arg address $OWNER_TN '{ "name": "icecream", "symbol": "icream", "decimals": 6, "initial_balances": [ { "address": $address, "amount": "1000000" } ], "mint": { "minter": $address, "cap": "99900000000" } }' | tee /dev/tty )
+    INST=$( jq -n --arg address $OWNER_TN '{ "name": "icecream", "symbol": "icream", "decimals": 6, "initial_balances": [ { "address": $address, "amount": "1000000" } ], "mint": { "minter": $address, "cap": "99900000000" } }' | tee /dev/tty )
     ```
-    This calls the `instantiate` method on the stored contract and passes in the JSON above.
+
+    Before we instantiate our contract let's set two more variables, first we need a label name for the contract to give a human readable label:
     ```console
-    cudos-noded tx wasm instantiate $CONTRACT_INDEX "$INST" --from <your-wallet-name> --label "<label-name-for-contract" $TX_FLAGS_TN
+    $CONTRACT_LABEL="<label-name-for-contract>"
+    ```
+    Now we set an admin variable. For upgradeable smart contracts, we need to specify the address of the admin of the contract. While you can set the admin address to any address you like, in this case we use the owner address we used to store the contract:
+    ```console
+    ADMIN="--admin $OWNER_TN"
+    ```
+    Or, you can set this as `no-admin` if you want the contract to remain immutable:
+    ```console
+    ADMIN="--no-admin"
+    ```
+
+    :rocket: Now we instantiate! This calls the `instantiate` method on the stored contract and passes in the JSON from the `$INST` variable we set above. This gets stored in it's own `$INST_RESPONSE` variable:
+    ```console
+    INST_RESPONSE=$(cudos-noded tx wasm instantiate $CONTRACT_INDEX "$INST" --from $OWNER_TN --label $CONTRACT_LABEL `echo $TX_FLAGS_TN` $ADMIN)
     ```
 
 8. **Get the contract address.**
     
-    Now that our contract is instantiated, it has its own address on the network, so we grab that with a `wasm` query, extract it with `jq`, and set it as yet another environment variable:
+    Now that our contract is instantiated, it has its own address on the network which was returned in the output of the instantiation, so we extract it with `jq`, and set it as yet another environment variable:
     ```console
-    CONTRACT_ADDRESS=$(cudos-noded query wasm list-contract-by-code $CONTRACT_INDEX --node $RPC_NODE_TN --output json | jq -r '.contracts[-1]' | tee /dev/tty | tail -1 | tr -d '\r')
+    CONTRACT_ADDRESS=$(echo $INST_RESPONSE | jq -r '.logs[0].events[0].attributes[0].value' | tee /dev/tty | tail -1 | tr -d '\r')
     ```
     **You have successfully deployed and instantiated a smart contract on Cudos! Congratulations!**
     >Having deployed and retrieved the contract address, you can now interact with the contract on the chain, you can do this with a frontend to build your project into a full decentralised application (dApp). Take a look at `create-cosmos-app` to get going, it's a simple way of scaffolding a React frontend within the Cosmos ecosystem - Cudos included. [This YouTube video](https://www.youtube.com/live/hPec5D_lI1A?feature=share&t=1880) helps use `create-cosmos-app` for Cudos, as well as the docs in [the README of this very repo](../README.md).
@@ -121,7 +137,7 @@
     ```
     Then we execute this on chain:
     ```console
-    cudos-noded tx wasm execute $CONTRACT_ADDRESS "$TRANSFER_TO_OLLIE" --from <your-wallet-name> $TX_FLAGS_TN
+    cudos-noded tx wasm execute $CONTRACT_ADDRESS "$TRANSFER_TO_OLLIE" --from $OWNER_TN `echo $TX_FLAGS_TN`
     ```
 
 10. **BONUS 2: Query the contract state from the CLI**
