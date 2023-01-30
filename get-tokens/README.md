@@ -9,8 +9,10 @@ An important thing to understand is that there are two types of CUDOS token:
 
 To get CUDOS tokens and get them to the Native Cudos Blockchain, click your preferred exchange:
 
+**Native Token Centralised Exchanges:**
 - [AscendEX](./cex-native.md)
-
+---
+**ERC-20 Token Centralised Exchanges:**
 - [Bilaxy](./cex-erc.md)
 - [Bittrex](./cex-erc.md)
 - [ChangeNow](./cex-erc.md)
@@ -22,10 +24,13 @@ To get CUDOS tokens and get them to the Native Cudos Blockchain, click your pref
 - [Liquid Global](./cex-erc.md)
 - [Poloniex](./cex-erc.md)
 - [StealthEX](./cex-erc.md)
-
-- [Osmosis]()
-
-- [Uniswap]()
-
-- [Binance]()
-- [Other]()
+---
+**Native Token Decentralised Exchanges:**
+- [Osmosis (Frontier)](./dex-native.md)
+---
+**ERC-20 Token Decentralised Exchanges:**
+- [Uniswap](./dex-erc.md)
+---
+**Other Centralised Exchanges:**
+- [Binance](./cex-other.md)
+- [Other](./cex-other.md)
