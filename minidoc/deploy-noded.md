@@ -26,7 +26,7 @@
     export KEYRING_TN=os
 
     # environment variables for mainnet
-    export RPC_NODE="https://rpc.cudos.org"
+    export RPC_NODE="https://rpc.cudos.org:443"
     export CHAIN_ID=cudos-1
     export GAS=auto
     export GAS_PRICES=5000000000000acudos
