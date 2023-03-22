@@ -18,7 +18,7 @@
     You will notice we use *a lot* of environment variables for all the flags of the CLI to keep things structured and avoid repetition. We use `_TN` at the end of any flags to denote "testnet". Here is an example list of flags:
     ```
     # environment variables for testnet, ending with "TN"
-    export RPC_NODE_TN="https://sentry1.gcp-uscentral1.cudos.org:36657"
+    export RPC_NODE_TN="https://rpc.testnet.cudos.org:443"
     export CHAIN_ID_TN=cudos-testnet-public-3
     export GAS_TN=auto
     export GAS_PRICES_TN=5000000000000acudos
@@ -26,7 +26,7 @@
     export KEYRING_TN=os
 
     # environment variables for mainnet
-    export RPC_NODE="https://rpc.cudos.org"
+    export RPC_NODE="https://rpc.cudos.org:443"
     export CHAIN_ID=cudos-1
     export GAS=auto
     export GAS_PRICES=5000000000000acudos
